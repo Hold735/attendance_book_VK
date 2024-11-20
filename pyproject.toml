@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "attendance-book-vk"
+version = "0.1.0"
+description = "Бот ВКонтакте для ведения журнала посещаемости в студенческих клубах"
+authors = ["Kurchukov Maksim <kurchukovmax@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+vk-api = "^11.9.9"
+openpyxl = "^3.1.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
