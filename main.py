@@ -5,6 +5,8 @@ from openpyxl import Workbook, load_workbook
 from datetime import datetime
 
 
+VERSION = "5.1.1"
+
 """-------------------------------------------Глобальные константы-------------------------------------------"""
 
 
@@ -317,6 +319,9 @@ def day_of_kick():
     # Отбираем данные листа с Посещаемостью: Процент посещений, ID VK, Звание, Имя
     percents_list_1 = list(sheet_perc_1.iter_cols(min_col=USERS_COLUMN + 9, max_col=USERS_COLUMN + 9, min_row=2,
                                                   max_row=sheet_perc_1.max_row, values_only=True))[0]
+    # TODO: учесть None
+    if None in percents_list_1:
+        percents_list_1 = percents_list_1[:percents_list_1.index(None)]
     percents_list_1 = list(map(float, percents_list_1))
     user_id_list_1 = list(sheet_1.iter_cols(min_col=USERS_COLUMN - 1, max_col=USERS_COLUMN - 1, min_row=2,
                                             max_row=sheet_1.max_row, values_only=True))[0]
@@ -331,6 +336,9 @@ def day_of_kick():
     # Отбираем данные листа с Соревнованиями: Процент посещений, ID VK
     percents_list_2 = list(sheet_perc_2.iter_cols(min_col=USERS_COLUMN + 9, max_col=USERS_COLUMN + 9, min_row=2,
                                                   max_row=sheet_perc_2.max_row, values_only=True))[0]
+    # TODO: учесть None
+    if None in percents_list_2:
+        percents_list_2 = percents_list_2[:percents_list_2.index(None)]
     percents_list_2 = list(map(float, percents_list_2))
     user_id_list_2 = list(sheet_2.iter_cols(min_col=USERS_COLUMN - 1, max_col=USERS_COLUMN - 1, min_row=2,
                                             max_row=sheet_2.max_row, values_only=True))[0]
@@ -338,13 +346,17 @@ def day_of_kick():
 
     # Формируем единый словарь с данными: ID VK - [Имя, Звание, Процент 1, Процент 2]
     user_data_dict = {}
+    # TODO: учесть None
     for user_id, perc_1 in percents_dict_1.items():
-        user_data_dict[user_id] = [name_dict.get(user_id), rank_dict.get(user_id), perc_1, percents_dict_2.get(user_id)]
+        user_data_dict[user_id] = [name_dict.get(user_id, f"id_{user_id}"), rank_dict.get(user_id, "7.Рекрут"), perc_1, percents_dict_2.get(user_id, 0.0)]
 
     row_temp = 2                                # Счетчик строки
     kick_id_list, kick_name_list, kick_manual_list, reserve_id_list, reserve_name_list = [], [], [], [], []
     percents_list = list(sheet_perc_1.iter_cols(min_col=USERS_COLUMN + 9, max_col=USERS_COLUMN + 9, min_row=2,
                                                 max_row=sheet_perc_1.max_row, values_only=True))[0]
+    # TODO: учесть None
+    if None in percents_list:
+        percents_list = percents_list[:percents_list.index(None)]
     percents_list = list(map(float, percents_list))
 
     for percent in percents_list:
@@ -354,9 +366,8 @@ def day_of_kick():
 
             kick_id_temp = sheet_1.cell(row=row_temp, column=USERS_COLUMN - 1).value
             user_id_list_4 = list(sheet_4.iter_cols(min_col=USERS_COLUMN - 1, max_col=USERS_COLUMN - 1, values_only=True))[0]
-            user_index_4 = user_id_list_4.index(kick_id_temp) + 1
-
-            if sheet_4.cell(row=user_index_4, column=USERS_COLUMN + 9).value is not None:       # Условие наличия привода
+            # TODO: учесть None
+            if kick_id_temp in user_id_list_4 and sheet_4.cell(row=user_id_list_4.index(kick_id_temp) + 1, column=USERS_COLUMN + 9).value is not None:      # Условие наличия привода
                 reserve_id_list.append(int(sheet_1.cell(row=row_temp, column=USERS_COLUMN - 1).value))
                 reserve_name_list.append(sheet_1.cell(row=row_temp, column=USERS_COLUMN).value)
 
